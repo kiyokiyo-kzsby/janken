@@ -1,7 +1,7 @@
 <template>
   <div>
-    <h1>ジャンケン</h1>
     <div v-if="beforeJanken">
+        <h1>ジャンケン</h1>
         <h4>コンピュータ</h4>
         <img :src="handImageSrc[srcNum]" class="hand-image">
         <h4>あなた</h4>
@@ -10,8 +10,7 @@
         <img src="@/assets/janken-paper.png" alt="パー" class="hand-image" @click="janken(3)">
     </div>
     <div v-else>
-        <button @click="restart">もう１回</button>
-        <h3>{{ resultMessage }}</h3>
+        <h1>{{ resultMessage }}</h1>
         <h4>コンピュータ</h4>
         <img v-if="computerHand===1" src="@/assets/janken-rock.png" alt="グー" class="hand-image">
         <img v-else-if="computerHand===2" src="@/assets/janken-scissors.png" alt="チョキ" class="hand-image">
@@ -21,6 +20,8 @@
         <img v-if="userHand===1" src="@/assets/janken-rock.png" alt="グー" class="hand-image">
         <img v-else-if="userHand===2" src="@/assets/janken-scissors.png" alt="チョキ" class="hand-image">
         <img v-else src="@/assets/janken-paper.png" alt="パー" class="hand-image">
+        <br>
+        <button @click="restart">もう１回</button>
     </div>
   </div>
 </template>

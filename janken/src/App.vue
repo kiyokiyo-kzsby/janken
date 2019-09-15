@@ -3,7 +3,8 @@
     <Header></Header>
     <p>戦績：　{{ winCount }}勝　{{ loseCount }}敗　{{ drawCount }}分け</p>
     <p>p値 {{ (upperProbability+lowerProbability)/2*100 }} %</p>
-    <input type="text" placeholder="name" v-bind="name">
+    <p v-if="invalid" class="error">{{ invalidMessage }}</p>
+    <input type="text" placeholder="name" v-model="name">
     <button @click="submitResults">戦績を送信する</button>
     <router-view @updateResult="updateResult"></router-view>
   </div>
@@ -22,7 +23,9 @@ export default {
       winCount: 0,
       loseCount: 0,
       drawCount: 0,
-      name: ''
+      name: '',
+      invalid: false,
+      invalidMessage: ''
     }
   },
   computed: {
@@ -46,7 +49,16 @@ export default {
       else this.drawCount++;
     },
     submitResults(){
-
+      if(this.name==''){
+        this.invalid = true;
+        this.invalidMessage = '名前を入力してください'
+      }else{
+        this.winCount = 0;
+        this.loseCount = 0;
+        this.drawCount = 0;
+        this.invalid = false;
+        this.name = '';
+      }
     }
   }
 };
@@ -55,5 +67,9 @@ export default {
 <style>
 html {
   text-align: center;
+}
+
+.error{
+  color: red;
 }
 </style>
