@@ -12,7 +12,7 @@
 
 <script>
 import Header from "./components/Header";
-import {combinations,pow} from "mathjs"
+import axios from 'axios';
 
 export default {
   components: {
@@ -52,11 +52,36 @@ export default {
         this.invalid = true;
         this.invalidMessage = '名前を入力してください'
       }else{
-        this.winCount = 0;
-        this.loseCount = 0;
-        this.drawCount = 0;
-        this.invalid = false;
-        this.name = '';
+        axios
+        .post("https://firestore.googleapis.com/v1/projects/kiyokiyo-janken/databases/(default)/documents/results",{
+          fields:{
+            name: {
+              stringValue: this.name
+            },
+            winCount: {
+              doubleValue: this.winCount
+            },
+            loseCount: {
+              doubleValue: this.loseCount
+            },
+            drawCount: {
+              doubleValue: this.drawCount
+            },
+            winningPercentage: {
+              doubleValue: this.winningPercentage
+            },
+            timestamp: {
+              timestampValue: new Date
+            }
+          }
+        })
+        .then(response => {
+          this.winCount = 0;
+          this.loseCount = 0;
+          this.drawCount = 0;
+          this.invalid = false;
+          this.name = '';
+        })
       }
     }
   }
