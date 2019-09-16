@@ -1,8 +1,8 @@
 <template>
   <div>
     <Header></Header>
-    <p>戦績：　{{ winCount }}勝　{{ loseCount }}敗　{{ drawCount }}分け</p>
-    <p>p値 {{ (upperProbability+lowerProbability)/2*100 }} %</p>
+    <p>戦績：　{{ winCount }}勝　{{ loseCount }}敗　{{ drawCount }}分け　<button @click="resetScore">リセット</button></p>
+    <p>勝率 {{ winningPercentage }} %</p>
     <p v-if="invalid" class="error">{{ invalidMessage }}</p>
     <input type="text" placeholder="name" v-model="name">
     <button @click="submitResults">戦績を送信する</button>
@@ -29,20 +29,19 @@ export default {
     }
   },
   computed: {
-    upperProbability(){
-      var res = 0;
-      for(var i=this.winCount+1;i<=this.winCount+this.loseCount;i++){
-        res += combinations(this.winCount+this.loseCount,i)*pow((1/2),this.winCount+this.loseCount);
+    winningPercentage(){
+      if(this.winCount==0) return 0;
+      else{
+        return this.winCount / (this.winCount + this.loseCount + this.drawCount) * 100;
       }
-      return res;
-    },
-    lowerProbability(){
-      var res = this.upperProbability;
-      res += combinations(this.winCount+this.loseCount,this.winCount)*pow((1/2),this.winCount+this.loseCount);
-      return res;
     }
   },
   methods: {
+    resetScore(){
+      this.winCount = 0;
+      this.loseCount = 0;
+      this.drawCount = 0;
+    },
     updateResult(resultMessage){
       if(resultMessage=='勝ち') this.winCount++;
       else if(resultMessage=='負け') this.loseCount++;
