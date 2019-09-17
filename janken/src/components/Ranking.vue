@@ -12,11 +12,11 @@
       </tr>
       <tr v-for="result in results" :key="result.timestamp">
         <td>{{result.name}}</td>
-        <td>{{result.winningPercentage}}</td>
+        <td>{{result.winningPercentage|round}}%</td>
         <td>{{result.winCount}}</td>
         <td>{{result.loseCount}}</td>
         <td>{{result.drawCount}}</td>
-        <td>{{new Date( result.timestamp.seconds * 1000 )}}</td>
+        <td>{{result.timestamp.seconds|formatDate}}</td>
       </tr>
     </table>
   </div>
@@ -33,10 +33,25 @@ export default {
   },
   created(){
     db.collection('results').orderBy("winningPercentage","desc").limit(10).get().then((querySnapshot) => {
-    querySnapshot.forEach((doc) => {
-      this.results.push(doc.data())
+      querySnapshot.forEach((doc) => {
+        this.results.push(doc.data())
+      });
     });
-});
+  },
+  filters: {
+    formatDate(sec){
+      var date = new Date(sec*1000);
+      var y = ('000' + date.getFullYear()).slice(-4);
+      var m = ('0' + date.getMonth()).slice(-2);
+      var d = ('0' + date.getDate()).slice(-2);
+      var H = ('0' + date.getHours()).slice(-2);
+      var M = ('0' + date.getMinutes()).slice(-2);
+      var S = ('0' + date.getSeconds()).slice(-2);
+      return y + '/' + m + '/' + d + ' ' + H + ':' +  M + ':' + S;
+    },
+    round(num){
+      return Math.round(num*100)/100;
+    }
   }
 };
 </script>
