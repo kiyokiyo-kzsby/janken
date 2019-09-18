@@ -12,7 +12,7 @@
 
 <script>
 import Header from "./components/Header";
-import axios from 'axios';
+import db from './firebaseInit'
 
 export default {
   components: {
@@ -52,30 +52,14 @@ export default {
         this.invalid = true;
         this.invalidMessage = '名前を入力してください'
       }else{
-        axios
-        .post("https://firestore.googleapis.com/v1/projects/kiyokiyo-janken/databases/(default)/documents/results",{
-          fields:{
-            name: {
-              stringValue: this.name
-            },
-            winCount: {
-              doubleValue: this.winCount
-            },
-            loseCount: {
-              doubleValue: this.loseCount
-            },
-            drawCount: {
-              doubleValue: this.drawCount
-            },
-            winningPercentage: {
-              doubleValue: this.winningPercentage
-            },
-            timestamp: {
-              timestampValue: new Date
-            }
-          }
-        })
-        .then(response => {
+        db.collection('results').doc().set({
+          name: this.name,
+          winCount: this.winCount,
+          loseCount: this.loseCount,
+          drawCount: this.drawCount,
+          winningPercentage: this.winningPercentage,
+          timestamp: new Date
+        }).then(response => {
           this.winCount = 0;
           this.loseCount = 0;
           this.drawCount = 0;
