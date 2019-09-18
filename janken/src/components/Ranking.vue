@@ -10,7 +10,7 @@
         <th>引分け数</th>
         <th>日時</th>
       </tr>
-      <tr v-for="result in results" :key="result.timestamp">
+      <tr v-for="result in results" :key="result.id">
         <td>{{result.name}}</td>
         <td>{{result.winningPercentage|round}}%</td>
         <td>{{result.winCount}}</td>
@@ -34,7 +34,10 @@ export default {
   created(){
     db.collection('results').orderBy("winningPercentage","desc").limit(10).get().then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
-        this.results.push(doc.data())
+        var result = doc.data();
+        result.id = doc.id;
+        this.results.push(result);
+        console.log(result);
       });
     });
   },
