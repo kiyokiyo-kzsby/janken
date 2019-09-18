@@ -6,7 +6,9 @@
     <p v-if="invalid" class="error">{{ invalidMessage }}</p>
     <input type="text" placeholder="name" v-model="name">
     <button @click="submitResults">戦績を送信する</button>
-    <router-view @updateResult="updateResult"></router-view>
+    <keep-alive>
+      <router-view @updateResult="updateResult"></router-view>
+    </keep-alive>
   </div>
 </template>
 
@@ -41,6 +43,7 @@ export default {
       this.winCount = 0;
       this.loseCount = 0;
       this.drawCount = 0;
+      this.invalid = false;
     },
     updateResult(resultMessage){
       if(resultMessage=='勝ち') this.winCount++;
@@ -48,9 +51,15 @@ export default {
       else this.drawCount++;
     },
     submitResults(){
-      if(this.name==''){
+      if(this.winCount+this.loseCount+this.drawCount==0){
+        this.invalid = true;
+        this.invalidMessage = '戦績がありません'
+      }else if(this.name==''){
         this.invalid = true;
         this.invalidMessage = '名前を入力してください'
+      }else if(this.name.length>10){
+        this.invalid = true;
+        this.invalidMessage = '名前は10文字以下にしてください'
       }else{
         db.collection('results').doc().set({
           name: this.name,
@@ -60,9 +69,7 @@ export default {
           winningPercentage: this.winningPercentage,
           timestamp: new Date
         }).then(response => {
-          this.winCount = 0;
-          this.loseCount = 0;
-          this.drawCount = 0;
+          this.resetScore();
           this.invalid = false;
           this.name = '';
         })
