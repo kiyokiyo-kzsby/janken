@@ -81,14 +81,23 @@ export default {
       }
     },
     getResults(){
-      db.collection('results').orderBy("winningPercentage","desc").limit(10).get().then((querySnapshot) => {
+      db.collection('results').orderBy("winningPercentage","desc").orderBy("winCount","desc").orderBy("timestamp").get().then((querySnapshot) => {
         this.results = [];
+        var rank = 1;
+        var notRanked = [];
         querySnapshot.forEach((doc) => {
           var result = doc.data();
-          result.id = doc.id;
-          this.results.push(result);
-          console.log(result);
+          if(rank<=10){
+            result.id = doc.id;
+            this.results.push(result);
+            this.rank = rank++;
+          }else{
+            notRanked.push(doc.id);
+          }
         });
+        notRanked.forEach((id) => {
+          db.collection('results').doc(id).delete();
+        })
       });
     }
   }
