@@ -23,24 +23,8 @@
 </template>
 
 <script>
-import db from '../firebaseInit';
-
 export default {
-  data(){
-    return {
-      results: []
-    }
-  },
-  created(){
-    db.collection('results').orderBy("winningPercentage","desc").limit(10).get().then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        var result = doc.data();
-        result.id = doc.id;
-        this.results.push(result);
-        console.log(result);
-      });
-    });
-  },
+  props: ['results'],
   filters: {
     formatDate(sec){
       var date = new Date(sec*1000);

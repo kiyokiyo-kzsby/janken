@@ -7,7 +7,7 @@
     <input type="text" placeholder="name" v-model="name">
     <button @click="submitResults">戦績を送信する</button>
     <keep-alive>
-      <router-view @updateResult="updateResult"></router-view>
+      <router-view @updateResult="updateResult" :results="results"></router-view>
     </keep-alive>
   </div>
 </template>
@@ -27,7 +27,8 @@ export default {
       drawCount: 0,
       name: '',
       invalid: false,
-      invalidMessage: ''
+      invalidMessage: '',
+      results: []
     }
   },
   computed: {
@@ -37,6 +38,9 @@ export default {
         return this.winCount / (this.winCount + this.loseCount + this.drawCount) * 100;
       }
     }
+  },
+  created(){
+    this.getResults();
   },
   methods: {
     resetScore(){
@@ -72,8 +76,20 @@ export default {
           this.resetScore();
           this.invalid = false;
           this.name = '';
+          this.getResults();
         })
       }
+    },
+    getResults(){
+      db.collection('results').orderBy("winningPercentage","desc").limit(10).get().then((querySnapshot) => {
+        this.results = [];
+        querySnapshot.forEach((doc) => {
+          var result = doc.data();
+          result.id = doc.id;
+          this.results.push(result);
+          console.log(result);
+        });
+      });
     }
   }
 };
