@@ -3,6 +3,7 @@
     <h1>ランキング</h1>
     <table border=true>
       <tr>
+        <th>順位</th>
         <th>名前</th>
         <th>勝率</th>
         <th>勝ち数</th>
@@ -11,6 +12,7 @@
         <th>日時</th>
       </tr>
       <tr v-for="result in results" :key="result.id">
+        <td>{{result.rank}}</td>
         <td>{{result.name}}</td>
         <td>{{result.winningPercentage|round}}%</td>
         <td>{{result.winCount}}</td>

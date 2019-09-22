@@ -54,7 +54,7 @@ export default {
       else if(resultMessage=='負け') this.loseCount++;
       else this.drawCount++;
     },
-    submitResults(){
+    submitValidate(){
       if(this.winCount+this.loseCount+this.drawCount==0){
         this.invalid = true;
         this.invalidMessage = '戦績がありません'
@@ -65,39 +65,50 @@ export default {
         this.invalid = true;
         this.invalidMessage = '名前は10文字以下にしてください'
       }else{
-        db.collection('results').doc().set({
-          name: this.name,
-          winCount: this.winCount,
-          loseCount: this.loseCount,
-          drawCount: this.drawCount,
-          winningPercentage: this.winningPercentage,
-          timestamp: new Date
-        }).then(response => {
-          this.resetScore();
-          this.invalid = false;
-          this.name = '';
-          this.getResults();
-        })
+        this.invalid = false;
+        this.invalidMessage = '';
+      }
+      return !this.invalid;
+    },
+    submitResults(){
+      if(this.submitValidate()){
+        this.getResults();
+        var rankIn = false;
+        if(this.winningPercentage > this.results[9].winningPercentage) rankIn = true;
+        else if(this.winningPercentage == this.results[9].winningPercentage && this.winCount > this.results[9].winCount) rankIn = true;
+        if(rankIn){
+          db.collection('results').doc()
+          .set({
+            name: this.name,
+            winCount: this.winCount,
+            loseCount: this.loseCount,
+            drawCount: this.drawCount,
+            winningPercentage: this.winningPercentage,
+            timestamp: new Date
+          })
+          .then(() => {
+            this.resetScore();
+            this.name = '';
+            this.getResults();
+            db.collection('results').doc(this.results[9].id).delete()
+          })
+        }
       }
     },
     getResults(){
       db.collection('results').orderBy("winningPercentage","desc").orderBy("winCount","desc").orderBy("timestamp").get().then((querySnapshot) => {
         this.results = [];
         var rank = 1;
-        var notRanked = [];
         querySnapshot.forEach((doc) => {
-          var result = doc.data();
           if(rank<=10){
+            var result = doc.data();
             result.id = doc.id;
+            result.rank = rank++;
             this.results.push(result);
-            this.rank = rank++;
           }else{
-            notRanked.push(doc.id);
+            db.collection('results').doc(doc.id).delete()
           }
         });
-        notRanked.forEach((id) => {
-          db.collection('results').doc(id).delete();
-        })
       });
     }
   }
