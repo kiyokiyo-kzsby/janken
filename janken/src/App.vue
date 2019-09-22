@@ -94,7 +94,7 @@ export default {
             this.$toasted.show('ランクイン！ :)',{
               position: 'bottom-left',
               duration: 3000,
-              type: 'info'
+              type: 'success'
             });
             this.resetScore();
             this.name = '';
@@ -109,7 +109,6 @@ export default {
           this.resetScore();
           this.name = '';
         }
-        
       }
     },
     getResults(){
