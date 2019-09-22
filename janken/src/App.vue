@@ -14,7 +14,8 @@
 
 <script>
 import Header from "./components/Header";
-import db from './firebaseInit'
+import db from './firebaseInit';
+import Toasted from 'vue-toasted';
 
 export default {
   components: {
@@ -74,8 +75,11 @@ export default {
       if(this.submitValidate()){
         this.getResults();
         var rankIn = false;
-        if(this.winningPercentage > this.results[9].winningPercentage) rankIn = true;
-        else if(this.winningPercentage == this.results[9].winningPercentage && this.winCount > this.results[9].winCount) rankIn = true;
+        if(this.results.length<10) rankIn = true;
+        else{
+          if(this.winningPercentage > this.results[9].winningPercentage) rankIn = true;
+          else if(this.winningPercentage == this.results[9].winningPercentage && this.winCount > this.results[9].winCount) rankIn = true;
+        }
         if(rankIn){
           db.collection('results').doc()
           .set({
@@ -87,12 +91,25 @@ export default {
             timestamp: new Date
           })
           .then(() => {
+            this.$toasted.show('ランクイン！ :)',{
+              position: 'bottom-left',
+              duration: 3000,
+              type: 'info'
+            });
             this.resetScore();
             this.name = '';
             this.getResults();
-            db.collection('results').doc(this.results[9].id).delete()
           })
+        }else{
+          this.$toasted.show('ランク外 :(',{
+            position: 'bottom-left',
+            duration: 3000,
+            type: 'info'
+          });
+          this.resetScore();
+          this.name = '';
         }
+        
       }
     },
     getResults(){
