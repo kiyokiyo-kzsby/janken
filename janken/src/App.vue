@@ -1,32 +1,29 @@
 <template>
   <v-app>
     <v-container>
-      <v-row justify="center">
-        <v-col>
-          <h1>キング・オブ・ジャンケン</h1>
-        </v-col>
-      </v-row>
-      <v-row justify="center" align="center">
-        <v-col cols="4">
-            <p>
+      <h1>キング・オブ・ジャンケン</h1>
+      <v-row justify="center" align="center" class="pa-1 ma-0">
+        <v-col cols="4" class="pa-0 ma-0">
+            <p class="pa-0 ma-0">
               <span class="hidden-xs-only">戦績： </span>
               <span>{{ winCount }}勝 {{ loseCount }}敗 {{ drawCount }}分け</span>
             </p>
-            <p>勝率 {{ winningPercentage | round}} %</p>
+            <p class="pa-0 ma-0">勝率 {{ winningPercentage | round}} %</p>
         </v-col>
-        <v-col cols="2">
+        <v-col cols="2" class="pa-0 ma-0">
           <v-btn @click="resetScore" :disabled="!validScore">リセット</v-btn>
         </v-col>
       </v-row>
-      <v-row justify="center">
-        <v-col cols="4">
-          <v-form v-model="validName">
+      <v-row justify="center" class="pa-1 ma-0">
+        <v-col cols="4" class="pa-0 ma-0">
+          <v-form v-model="validName" class="pa-0 ma-0">
             <v-text-field
               v-model="name"
               label="name"
               required
               :rules="nameRules"
               :counter="10"
+              class="pa-0 ma-0"
             >
             </v-text-field>
           </v-form>
@@ -39,7 +36,7 @@
         </v-col>
       </v-row>
       <v-row justify="center">
-        <v-col>
+        <v-col class="pa-1 ma-0">
           <v-tabs centered v-model="tabNum">
             <v-tab>Janken</v-tab>
             <v-tab>Ranking</v-tab>
