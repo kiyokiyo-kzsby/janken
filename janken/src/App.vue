@@ -1,41 +1,44 @@
 <template>
   <v-app>
     <v-container>
-      <v-row>
+      <v-row justify="center">
         <v-col>
           <h1>キング・オブ・ジャンケン</h1>
         </v-col>
       </v-row>
-      <v-row>
-        <v-col cols="3" offset="4">
-            <p>戦績：　{{ winCount }}勝　{{ loseCount }}敗　{{ drawCount }}分け</p>
-            <p>勝率 {{ winningPercentage }} %</p>
+      <v-row justify="center" align="center">
+        <v-col cols="4">
+            <p>
+              <span class="hidden-xs-only">戦績： </span>
+              <span>{{ winCount }}勝 {{ loseCount }}敗 {{ drawCount }}分け</span>
+            </p>
+            <p>勝率 {{ winningPercentage | round}} %</p>
         </v-col>
         <v-col cols="2">
-          <v-btn @click="resetScore">リセット</v-btn>
+          <v-btn @click="resetScore" :disabled="!validScore">リセット</v-btn>
         </v-col>
       </v-row>
-      <v-row>
-        <v-col cols="4" offset="3">
-          <p v-if="invalid" class="error">{{ invalidMessage }}</p>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col cols="4" offset="3">
-          <v-form>
+      <v-row justify="center">
+        <v-col cols="4">
+          <v-form v-model="validName">
             <v-text-field
               v-model="name"
               label="name"
               required
+              :rules="nameRules"
+              :counter="10"
             >
             </v-text-field>
           </v-form>
         </v-col>
         <v-col cols="2">
-          <v-btn @click="submitResults" color='primary' size='medium'>戦績を送信する</v-btn>
+          <v-btn @click="submitResults" color='primary' size='medium' :disabled="!(validName&&validScore)">
+            <span class="hidden-xs-only">戦績を</span>
+            <span>送信</span>
+          </v-btn>
         </v-col>
       </v-row>
-      <v-row>
+      <v-row justify="center">
         <v-col>
           <v-tabs centered v-model="tabNum">
             <v-tab>Janken</v-tab>
@@ -43,17 +46,12 @@
           </v-tabs>
         </v-col>
       </v-row>
-      <v-row>
-        <v-col>
-          <component :is="components[tabNum]" @updateResult="updateResult" :results="results"></component>
-        </v-col>
-      </v-row>
+      <component :is="components[tabNum]" @updateResult="updateResult" :results="results"></component>
     </v-container>
   </v-app>
 </template>
 
 <script>
-import Header from "./components/Header";
 import Janken from "./components/Janken";
 import Ranking from "./components/Ranking";
 import db from './firebaseInit';
@@ -61,7 +59,6 @@ import Toasted from 'vue-toasted';
 
 export default {
   components: {
-    Header,
     Janken,
     Ranking
   },
@@ -71,11 +68,16 @@ export default {
       loseCount: 0,
       drawCount: 0,
       name: '',
-      invalid: false,
-      invalidMessage: '',
       results: [],
       components: ['Janken','Ranking'],
-      tabNum: 0
+      tabNum: 0,
+      isMobile: false,
+      nameRules: [
+        v => !!v || 'Name is required',
+        v => v.length <= 10 || 'Name must be less than 10 characters',
+        v => !(/ |　/).test(v) || "You can't use space"
+      ],
+      validName: false
     }
   },
   computed: {
@@ -84,17 +86,36 @@ export default {
       else{
         return this.winCount / (this.winCount + this.loseCount + this.drawCount) * 100;
       }
+    },
+    validScore(){
+      return this.winCount+this.loseCount+this.drawCount>0
     }
   },
   created(){
     this.getResults();
   },
+  beforeDestroy () {
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('resize', this.onResize, { passive: true })
+    }
+  },
+  mounted () {
+    this.onResize()
+    window.addEventListener('resize', this.onResize, { passive: true })
+  },
+  filters: {
+    round(num){
+      return Math.round(num*100)/100;
+    }
+  },
   methods: {
+    onResize () {
+      this.isMobile = window.innerWidth < 600
+    },
     resetScore(){
       this.winCount = 0;
       this.loseCount = 0;
       this.drawCount = 0;
-      this.invalid = false;
     },
     updateResult(resultMessage){
       if(resultMessage=='勝ち') this.winCount++;
@@ -102,20 +123,7 @@ export default {
       else this.drawCount++;
     },
     submitValidate(){
-      if(this.winCount+this.loseCount+this.drawCount==0){
-        this.invalid = true;
-        this.invalidMessage = '戦績がありません'
-      }else if(this.name==''){
-        this.invalid = true;
-        this.invalidMessage = '名前を入力してください'
-      }else if(this.name.length>10){
-        this.invalid = true;
-        this.invalidMessage = '名前は10文字以下にしてください'
-      }else{
-        this.invalid = false;
-        this.invalidMessage = '';
-      }
-      return !this.invalid;
+      return this.validName&&this.validScore;
     },
     submitResults(){
       if(this.submitValidate()){
@@ -139,21 +147,19 @@ export default {
           .then(() => {
             this.$toasted.show('ランクイン！ :)',{
               position: 'bottom-left',
-              duration: 3000,
+              duration: 5000,
               type: 'success'
             });
             this.resetScore();
-            this.name = '';
             this.getResults();
           })
         }else{
           this.$toasted.show('ランク外 :(',{
             position: 'bottom-left',
-            duration: 3000,
+            duration: 5000,
             type: 'info'
           });
           this.resetScore();
-          this.name = '';
         }
       }
     },
@@ -180,5 +186,11 @@ export default {
 <style>
 html{
   text-align: center;
+}
+
+@media screen and (max-width:600px) {
+h1{
+  font-size: 24px;
+}
 }
 </style>

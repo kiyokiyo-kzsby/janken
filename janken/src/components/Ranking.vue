@@ -1,30 +1,38 @@
 <template>
   <div>
-    <h1>ランキング</h1>
-    <v-simple-table dark height="300px" fixed-header>
-      <thead>
-        <tr>
-          <th>順位</th>
-          <th>名前</th>
-          <th>勝率</th>
-          <th>勝ち数</th>
-          <th>負け数</th>
-          <th>引分け数</th>
-          <th>日時</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="result in results" :key="result.id">
-          <td>{{result.rank}}</td>
-          <td>{{result.name}}</td>
-          <td>{{result.winningPercentage|round}}%</td>
-          <td>{{result.winCount}}</td>
-          <td>{{result.loseCount}}</td>
-          <td>{{result.drawCount}}</td>
-          <td>{{result.timestamp.seconds|formatDate}}</td>
-        </tr>
-      </tbody>
-    </v-simple-table>
+    <v-row>
+      <v-col>
+        <h1>ランキング</h1>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <v-simple-table dark height="300px" fixed-header>
+          <thead>
+            <tr>
+              <th>順位</th>
+              <th>名前</th>
+              <th>勝率</th>
+              <th>勝ち数</th>
+              <th>負け数</th>
+              <th>引分け数</th>
+              <th class="hidden-xs-only">日時</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="result in results" :key="result.id">
+              <td>{{result.rank}}</td>
+              <td>{{result.name}}</td>
+              <td>{{result.winningPercentage|round}}%</td>
+              <td>{{result.winCount}}</td>
+              <td>{{result.loseCount}}</td>
+              <td>{{result.drawCount}}</td>
+              <td class="hidden-xs-only">{{result.timestamp.seconds|formatDate}}</td>
+            </tr>
+          </tbody>
+        </v-simple-table>
+      </v-col>
+    </v-row>
   </div>
 </template>
 
@@ -50,5 +58,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>

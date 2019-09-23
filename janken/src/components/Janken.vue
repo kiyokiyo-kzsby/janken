@@ -76,4 +76,12 @@ export default {
     height: 100px;
     margin: 0 20px;
 }
+
+@media screen and (max-width:600px) {
+.hand-image{
+    display: inline-block;
+    height: 72px;
+    margin: 0 12px;
+}
+}
 </style>
