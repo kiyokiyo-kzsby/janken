@@ -1,25 +1,69 @@
 <template>
-  <div>
-    <Header></Header>
-    <p>戦績：　{{ winCount }}勝　{{ loseCount }}敗　{{ drawCount }}分け　<button @click="resetScore">リセット</button></p>
-    <p>勝率 {{ winningPercentage }} %</p>
-    <p v-if="invalid" class="error">{{ invalidMessage }}</p>
-    <input type="text" placeholder="name" v-model="name">
-    <button @click="submitResults">戦績を送信する</button>
-    <keep-alive>
-      <router-view @updateResult="updateResult" :results="results"></router-view>
-    </keep-alive>
-  </div>
+  <v-app>
+    <v-container>
+      <v-row>
+        <v-col>
+          <h1>キング・オブ・ジャンケン</h1>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="3" offset="4">
+            <p>戦績：　{{ winCount }}勝　{{ loseCount }}敗　{{ drawCount }}分け</p>
+            <p>勝率 {{ winningPercentage }} %</p>
+        </v-col>
+        <v-col cols="2">
+          <v-btn @click="resetScore">リセット</v-btn>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="4" offset="3">
+          <p v-if="invalid" class="error">{{ invalidMessage }}</p>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="4" offset="3">
+          <v-form>
+            <v-text-field
+              v-model="name"
+              label="name"
+              required
+            >
+            </v-text-field>
+          </v-form>
+        </v-col>
+        <v-col cols="2">
+          <v-btn @click="submitResults" color='primary' size='medium'>戦績を送信する</v-btn>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col>
+          <v-tabs centered v-model="tabNum">
+            <v-tab>Janken</v-tab>
+            <v-tab>Ranking</v-tab>
+          </v-tabs>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col>
+          <component :is="components[tabNum]" @updateResult="updateResult" :results="results"></component>
+        </v-col>
+      </v-row>
+    </v-container>
+  </v-app>
 </template>
 
 <script>
 import Header from "./components/Header";
+import Janken from "./components/Janken";
+import Ranking from "./components/Ranking";
 import db from './firebaseInit';
 import Toasted from 'vue-toasted';
 
 export default {
   components: {
-    Header
+    Header,
+    Janken,
+    Ranking
   },
   data() {
     return {
@@ -29,7 +73,9 @@ export default {
       name: '',
       invalid: false,
       invalidMessage: '',
-      results: []
+      results: [],
+      components: ['Janken','Ranking'],
+      tabNum: 0
     }
   },
   computed: {
@@ -132,11 +178,7 @@ export default {
 </script>
 
 <style>
-html {
+html{
   text-align: center;
-}
-
-.error{
-  color: red;
 }
 </style>

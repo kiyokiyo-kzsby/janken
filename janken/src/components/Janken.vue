@@ -23,7 +23,7 @@
         <img v-else-if="userHand===2" src="@/assets/janken-scissors.png" alt="チョキ" class="hand-image">
         <img v-else src="@/assets/janken-paper.png" alt="パー" class="hand-image">
         <br>
-        <button @click="restart">もう１回</button>
+        <v-btn @click="restart" color="primary">もう１回</v-btn>
     </div>
   </div>
 </template>
