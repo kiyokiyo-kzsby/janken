@@ -3,7 +3,9 @@
     <div v-if="beforeJanken">
         <h1>ジャンケン</h1>
         <h4>コンピュータ</h4>
-        <img :src="handImageSrc[srcNum]" class="hand-image">
+        <img src="@/assets/janken-rock.png" alt="グー" class="hand-image" v-show="srcNum==0">
+        <img src="@/assets/janken-scissors.png" alt="チョキ" class="hand-image" v-show="srcNum==1">
+        <img src="@/assets/janken-paper.png" alt="パー" class="hand-image" v-show="srcNum==2">
         <h4>あなた</h4>
         <img src="@/assets/janken-rock.png" alt="グー" class="hand-image" @click="janken(1)">
         <img src="@/assets/janken-scissors.png" alt="チョキ" class="hand-image" @click="janken(2)">
@@ -34,11 +36,6 @@ export default {
             userHand: 0,
             computerHand: 0,
             resultMessage: '',
-            handImageSrc: [
-                require('../assets/janken-rock.png'),
-                require('../assets/janken-scissors.png'),
-                require('../assets/janken-paper.png')
-            ],
             srcNum: 0
         }
     },
